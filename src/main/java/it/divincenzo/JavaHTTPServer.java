@@ -204,6 +204,10 @@ public class JavaHTTPServer implements Runnable{
 		}
 		else if (fileRequested.endsWith(".gif")) {
 			return "image/gif";
+		}else if (fileRequested.endsWith(".json")) {
+			return "application/json";
+		}else if (fileRequested.endsWith(".xml")) {
+			return "application/xml";
 		}
 		else{
 			return "text/plain";
