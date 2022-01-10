@@ -1,4 +1,249 @@
-.test{
-    color: green;
+body, html{
+    
+    font-family: 'Inria Sans', sans-serif;
+    height: 100%;
+    margin: 0;
+}
+
+p, h1, h2, h3, h4, h5, h6{
+    cursor: default;
+}
+
+.play-font{
+    font-family: 'Play', sans-serif;
+}
+
+
+.bg-image{
+
+    background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url("../images/homepage/home_page_bg.jpg");
+
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+}
+
+
+/***********************/
+/*     SCROLLBAR       */
+/***********************/
+
+
+::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #363638;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #ee2e24;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #ee2e24;
+  }
+
+
+/***********************/
+/*    /SCROLLBAR       */
+/***********************/
+
+/***********************/
+/*      NAVBAR         */
+/***********************/
+
+
+.navbar{
+
+    height: 65px;
+
+}
+
+div#navbarSupportedContent.navbar-collapse.collapse.show{
+    background-color: #363638;
+    z-index: 999;
+}
+
+.nav-link{
+
+    font-size: 25px;
+    color: #fefefe !important; /* Non ho messo la classe text-light nel codice html perchè sennò con l'effetto hover i link non diventavano rossi*/
+    border-bottom: 3px solid transparent; /* L'ho messo per far si che quando si passa col mouse sul link esso non si sposta */
+ 
+}
+
+.nav-link:hover{
+
+    color: #ee2e24 !important;
+    border-bottom: 3px solid #ee2e24;
+
+}
+
+
+/***********************/
+/*     / NAVBAR        */
+/***********************/
+
+.title{
+
+    font-size: 40px;
+
+}
+
+.subtitle{
+
+    font-family: 'Inria Sans', sans-serif;
+    font-size: 20px;
+
+}
+
+
+.scopri-button{
+    background-color: #ee2e24 !important;
+    border: none;
+    border-radius: 0px;
+    padding: 12px 40px 12px 40px; /*padding: top right bottom left*/
+    font-size: 16px;
+}
+
+.scopri-button:focus, .scopri-button:active{
+    box-shadow: none;
+}
+.title-2{
+    font-size: 50px;
+    color: #000;
+}
+
+.img-effect:hover{
+    box-shadow: 0px 2px 10px 4px #A0A0A0;
+    transform: translateY(-3px);
+}
+
+.img-effect{
+    transition-duration: 0.3s;
+}
+
+.card-effect:hover{
+    box-shadow: 0px 2px 10px 4px #D6D6D6;
+    transform: translateY(-3px);
+}
+
+.card-effect{
+    transition-duration: 0.3s;
+}
+
+
+.img-container{
+    position: relative;
+    text-align: center;
+}
+
+.text-bottom{
+    position: absolute;
+    bottom: -6px;
+    font-size: 30px;
+    left: 50%;
+    transform: translate(-50%);
     font-weight: bold;
+    width: 100%;
+}
+
+footer{
+    background-color: #363638;
+
+}
+
+
+.language-button{
+    font-size: 20px;
+    border: none;
+    border-radius: none;
+    background-color: #515153;
+    color: #AFAFAF;
+}
+
+.language-button:hover{
+
+    background-color: #515153;
+    color: #AFAFAF;
+}
+
+
+
+ .language-button:focus, .language-button:active{
+    background-color: #515153 !important;
+    color: #AFAFAF;
+}
+
+.fab{ /* PER LE ICONE DI FONTAWESOME*/
+
+    color: #AFAFAF;
+    font-size: 32px;
+
+}
+
+.footer-text{
+    color: #AFAFAF;
+    line-height: 1.6;
+    text-decoration: none;
+}
+
+.footer-text:hover{
+    text-decoration: none;
+    color: #AFAFAF;
+    border-bottom: 1px solid #afafaf;
+}
+
+/****************************************/
+/*       PAGINA MOTOCICLI STRADA        */
+/****************************************/
+
+.nav-motocicli{
+    height: 120px !important;
+}
+
+.card{
+    border: none;
+}
+
+.hr-scheda-tecnica{
+    background-color: #000 !important;
+
+}
+
+.acquista-button{
+    background-color: #ee2e24 !important;
+    border: none;
+    border-radius: 0px;
+    padding: 12px 40px 12px 40px; /*padding: top right bottom left*/
+
+}
+
+
+.acquista-button:focus, .acquista-button:active{
+    box-shadow: none;
+}
+
+.fa-instagram:hover{
+    border-radius: 50px;
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%);
+    box-shadow: 0px 3px 10px rgba(0,0,0,.25);
+
+}
+
+.fa-facebook-f:hover{
+    color: #3b5998;
+}
+
+.fa-twitter:hover{
+    color: #00acee;
+}
+
+.fa-youtube:hover{
+    color: #c4302b;
 }
