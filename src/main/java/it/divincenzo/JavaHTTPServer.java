@@ -111,10 +111,9 @@ public class JavaHTTPServer implements Runnable{
 				
 			} else {
 				// GET or HEAD method
-				if(fileRequested.endsWith(".xml")){
+				if(fileRequested.endsWith(".json")){
 					root deserializedXML = XmlDeserializer();
 					JsonSerializer(deserializedXML);
-					fileRequested = "classe.json";
 				}
 
 				if (fileRequested.endsWith("/")) {
@@ -279,7 +278,7 @@ public class JavaHTTPServer implements Runnable{
 	private void JsonSerializer(root value) throws IOException{
 
 		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.writeValue(new File("src/main/resources/classe.json"), value);
+		objectMapper.writeValue(new File("src/main/classe.json"), value);
 
 		String valueAsString = objectMapper.writeValueAsString(value);
 		System.out.println(valueAsString);
