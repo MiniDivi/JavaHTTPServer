@@ -13,6 +13,9 @@ import java.net.Socket;
 import java.util.Date;
 import java.util.StringTokenizer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+
 // The tutorial can be found just here on the SSaurel's Blog : 
 // https://www.ssaurel.com/blog/create-a-simple-http-web-server-in-java
 // Each Client Connection will be managed in a dedicated Thread
@@ -108,6 +111,12 @@ public class JavaHTTPServer implements Runnable{
 				
 			} else {
 				// GET or HEAD method
+				if(fileRequested.endsWith(".xml")){
+					root deserializedXML = XmlDeserializer();
+					JsonSerializer(deserializedXML);
+					fileRequested = "classe.json";
+				}
+
 				if (fileRequested.endsWith("/")) {
 					fileRequested += DEFAULT_FILE;
 				} 
@@ -258,5 +267,21 @@ public class JavaHTTPServer implements Runnable{
 			System.out.println("File " + fileRequested + " moved permanently");
 		}
     }
-	
+
+	private root XmlDeserializer() throws IOException {
+		/*Deserializzo il file da XML a una POJO */
+		File file = new File("src/main/resources/classe.xml");
+        XmlMapper xmlMapper = new XmlMapper();
+        root value = xmlMapper.readValue(file, root.class);
+		return value;
+	}
+
+	private void JsonSerializer(root value) throws IOException{
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.writeValue(new File("src/main/resources/classe.json"), value);
+
+		String valueAsString = objectMapper.writeValueAsString(value);
+		System.out.println(valueAsString);
+	}
 }
