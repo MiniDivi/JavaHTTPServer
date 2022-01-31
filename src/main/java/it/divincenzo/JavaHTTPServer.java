@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.StringTokenizer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 // The tutorial can be found just here on the SSaurel's Blog : 
@@ -114,6 +115,9 @@ public class JavaHTTPServer implements Runnable{
 				if(fileRequested.endsWith(".json")){
 					root deserializedXML = XmlDeserializer();
 					JsonSerializer(deserializedXML);
+				} else if(fileRequested.endsWith(".xml")){
+					DeserializedJson deserializedJson = JsonDeserializer();
+					XmlSerializer(deserializedJson);
 				}
 
 				if (fileRequested.endsWith("/")) {
@@ -280,7 +284,26 @@ public class JavaHTTPServer implements Runnable{
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.writeValue(new File("src/main/classe.json"), value);
 
+		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 		String valueAsString = objectMapper.writeValueAsString(value);
 		System.out.println(valueAsString);
+	}
+
+	private DeserializedJson JsonDeserializer() throws IOException{
+		ObjectMapper objectMapper = new ObjectMapper();
+		DeserializedJson deserializedJson = objectMapper.readValue(new File("src/main/puntiVendita.json"), DeserializedJson.class);
+		//NON ARRIVA QUÌ
+		System.out.println("test1");
+		return deserializedJson;
+	}
+
+	private void XmlSerializer(DeserializedJson value) throws IOException{
+
+		//NON ENTRA QUÌ
+		System.out.println("test2");
+			XmlMapper xmlMapper = new XmlMapper();
+			xmlMapper.enable(SerializationFeature.INDENT_OUTPUT);
+			File puntiVendita = new File("src/main/punti-vendita.xml"); 
+            xmlMapper.writeValue(puntiVendita, value);
 	}
 }
