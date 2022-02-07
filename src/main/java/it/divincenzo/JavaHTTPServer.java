@@ -58,7 +58,6 @@ public class JavaHTTPServer implements Runnable {
 				Thread thread = new Thread(myServer);
 				thread.start();
 			}
-
 		} catch (IOException e) {
 			System.err.println("Server Connection error : " + e.getMessage());
 		}
@@ -102,53 +101,52 @@ public class JavaHTTPServer implements Runnable {
 				byte[] fileData = readFileData(file, fileLength);
 
 				// we send HTTP Headers with data to client
-				out.println("HTTP/1.1 501 Not Implemented");
-				out.println("Server: Java HTTP Server from SSaurel : 1.0");
-				out.println("Date: " + new Date());
-				out.println("Content-type: " + contentMimeType);
-				out.println("Content-length: " + fileLength);
-				out.println(); // blank line between headers and content, very important !
-				out.flush(); // flush character output stream buffer
-				// file
-				dataOut.write(fileData, 0, fileLength);
-				dataOut.flush();
+				httpResponse(out, dataOut, 501, contentMimeType, fileLength, fileData);
 
 			} else {
 				// GET or HEAD method
-				if (fileRequested.endsWith(".json")) {
-					root deserializedXML = XmlDeserializer();
-					JsonSerializer(deserializedXML);
-				} else if (fileRequested.endsWith(".xml")) {
-					DeserializedJson deserializedJson = JsonDeserializer();
-					XmlSerializer(deserializedJson);
-				}
-
 				if (fileRequested.endsWith("/")) {
+					// http://localhost:8080/ -> index.html (DEFUALT_FILE)
 					fileRequested += DEFAULT_FILE;
 				} else if (fileRequested.startsWith("/")) {
-					fileRequested.substring(1);
-				} else {
-					fileMoved(out, dataOut, fileRequested);
+					// rimuove / iniziale per recuperare il file
+					// /pippo.html -> pippo.html
+					fileRequested = fileRequested.substring(1);				
 				}
 
-				File file = new File(WEB_ROOT, fileRequested);
-				int fileLength = (int) file.length();
+				int fileLength = 0;
+				byte[] fileData = null;
+
+				if (fileRequested.endsWith(".json")){
+					root deserializedXML = XmlDeserializer();
+					String s = JsonSerializer(deserializedXML);
+					fileLength = s.length();
+					fileData = s.getBytes();
+				} else if (fileRequested.endsWith(".xml")) {
+					DeserializedJson deserializedJson = JsonDeserializer();
+					String s = XmlSerializer(deserializedJson);
+					fileLength = s.length();
+					fileData = s.getBytes();
+				} else {
+					// file su file system (statico)
+					// se il file non esiste provo a fare redrect
+					File file = new File(WEB_ROOT, fileRequested);
+					
+					if (file.exists() && file.isFile()) {
+						fileLength = (int) file.length();
+						fileData = readFileData(file, fileLength);
+					} else {
+						fileMoved(out, dataOut, fileRequested);
+						return;
+					}
+				}
+
+				
 				String content = getContentType(fileRequested);
 
 				if (method.equals("GET")) { // GET method so we return content
-					byte[] fileData = readFileData(file, fileLength);
-
 					// send HTTP Headers
-					out.println("HTTP/1.1 200 OK");
-					out.println("Server: Java HTTP Server from SSaurel : 1.0");
-					out.println("Date: " + new Date());
-					out.println("Content-type: " + content);
-					out.println("Content-length: " + fileLength);
-					out.println(); // blank line between headers and content, very important !
-					out.flush(); // flush character output stream buffer
-
-					dataOut.write(fileData, 0, fileLength);
-					dataOut.flush();
+					httpResponse(out, dataOut, 200, content, fileLength, fileData);
 				}
 
 				if (verbose) {
@@ -229,16 +227,7 @@ public class JavaHTTPServer implements Runnable {
 		String content = "text/html";
 		byte[] fileData = readFileData(file, fileLength);
 
-		out.println("HTTP/1.1 404 File Not Found");
-		out.println("Server: Java HTTP Server from SSaurel : 1.0");
-		out.println("Date: " + new Date());
-		out.println("Content-type: " + content);
-		out.println("Content-length: " + fileLength);
-		out.println(); // blank line between headers and content, very important !
-		out.flush(); // flush character output stream buffer
-
-		dataOut.write(fileData, 0, fileLength);
-		dataOut.flush();
+		httpResponse(out, dataOut, 404, content, fileLength, fileData);
 
 		if (verbose) {
 			System.out.println("File " + fileRequested + " not found");
@@ -251,22 +240,39 @@ public class JavaHTTPServer implements Runnable {
 		String content = "text/html";
 		byte[] fileData = readFileData(file, fileLength);
 
-		out.println("HTTP/1.1 301 File Moved Permanently");
-		out.println("location: " + (fileRequested += "/"));
-		out.println("Server: Java HTTP Server from SSaurel : 1.0");
-		out.println("Date: " + new Date());
-		out.println("Content-type: " + content);
-		out.println("Content-length: " + fileLength);
-		out.println(); // blank line between headers and content, very important !
-		out.flush(); // flush character output stream buffer
-
-		dataOut.write(fileData, 0, fileLength);
-		dataOut.flush();
-
+		httpResponse(out, dataOut, 301, content, fileLength, fileData);
 		if (verbose) {
 			System.out.println("File " + fileRequested + " moved permanently");
 		}
 	}
+
+	/*
+	 * Attenzione non stampa la prima riga dell'http response con il codice http (200 / 301 / 501 /404)
+	 */
+	 private void httpResponse(PrintWriter out, OutputStream dataOut, int httpCode, String contentMimeType, int fileLength, byte[] fileData) throws IOException {
+		
+		if(httpCode == 200){
+			out.println("HTTP/1.1 200 OK");
+		} else if (httpCode == 301){
+			out.println("HTTP/1.1 301 File Moved Permanently");
+		} else if (httpCode == 501){
+			out.println("HTTP/1.1 501 Not Implemented");
+		} else if (httpCode == 404){
+			out.println("HTTP/1.1 404 File Not Found");
+		}
+		
+		out.println("Server: Java HTTP Server from SSaurel : 1.0");
+		out.println("Date: " + new Date());
+		out.println("Content-type: " + contentMimeType);
+		out.println("Content-length: " + fileLength);
+		out.println(); // blank line between headers and content, very important !
+		out.flush(); // flush character output stream buffer
+		// file
+		dataOut.write(fileData, 0, fileLength);
+		dataOut.flush();
+
+	}
+
 
 	private root XmlDeserializer() throws IOException {
 		// Deserializzo il file da XML a POJO
@@ -276,13 +282,10 @@ public class JavaHTTPServer implements Runnable {
 		return value;
 	}
 
-	private void JsonSerializer(root value) throws IOException {
+	private String JsonSerializer(root value) throws IOException {
 		// Serializzo da POJO a JSON
 		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.writeValue(new File("src/main/resources/classe.json"), value);
-
-		String valueAsString = objectMapper.writeValueAsString(value);
-		System.out.println(valueAsString);
+		return objectMapper.writeValueAsString(value);
 	}
 
 	private DeserializedJson JsonDeserializer() throws IOException {
@@ -294,12 +297,11 @@ public class JavaHTTPServer implements Runnable {
 		return deserializedJson;
 	}
 
-	private void XmlSerializer(DeserializedJson value) throws IOException {
+	private String XmlSerializer(DeserializedJson value) throws IOException {
 		// Serializzo da POJO a XML
 
 		XmlMapper xmlMapper = new XmlMapper();
 		xmlMapper.enable(SerializationFeature.INDENT_OUTPUT);
-		File puntiVendita = new File("src/main/resources/punti-vendita.xml");
-		xmlMapper.writeValue(puntiVendita, value);
+		return xmlMapper.writeValueAsString(value);
 	}
 }
